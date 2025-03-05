@@ -1,7 +1,27 @@
-// src/TrendsChart.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const TrendsChart = () => {
   const [chartData, setChartData] = useState({});
@@ -14,19 +34,23 @@ const TrendsChart = () => {
           params: { keyword: 'Trump' }
         });
         const data = response.data;
-        const timeline = data.default.timelineData;
-        const labels = timeline.map((item) => new Date(item.time * 1000).toLocaleDateString());
-        const values = timeline.map((item) => item.value[0]);
-        
-        setChartData({
-          labels: labels,
-          datasets: [{
-            label: 'Interest Over Time',
-            data: values,
-            fill: false,
-            borderColor: 'rgba(75,192,192,1)',
-          }]
-        });
+        if (data && data.default && data.default.timelineData) {
+          const timeline = data.default.timelineData;
+          const labels = timeline.map(item => item.formattedTime);
+          const values = timeline.map(item => item.value[0]);
+
+          setChartData({
+            labels: labels,
+            datasets: [{
+              label: 'Interest Over Time',
+              data: values,
+              fill: false,
+              borderColor: 'rgba(75,192,192,1)',
+            }]
+          });
+        } else {
+          console.error("No timeline data available", data);
+        }
       } catch (error) {
         console.error('Error fetching trends:', error);
       } finally {
@@ -40,7 +64,7 @@ const TrendsChart = () => {
 
   return (
     <div>
-      <h2>US Trends for Technology (Past 30 Days)</h2>
+      <h2>US Trends for Trump (Past 30 Days)</h2>
       <Line data={chartData} />
     </div>
   );
