@@ -9,7 +9,7 @@ app.use(cors());
 
 app.get('/api/trends', async (req, res) => {
   try {
-    const keyword = req.query.keyword || 'Trump';
+    const keyword = req.query.keyword || 'technology';
     const results = await googleTrends.interestOverTime({
       keyword: keyword,
       startTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
